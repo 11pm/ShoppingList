@@ -6,11 +6,18 @@ package is.tskoli.alexander.shoppinglist;
 public class ShoppingItem {
 
     protected String item;
+    protected int amount;
     protected boolean done;
 
-    public ShoppingItem(String _item){
-        this.item = _item;
-        this.done = false;
+
+    public ShoppingItem(String _item, int _amount){
+        this.item   = _item;
+        this.amount = _amount;
+        this.done   = false;
+    }
+
+    public void setAmount(int amount){
+        this.amount = amount;
     }
 
     public void setDone(){
