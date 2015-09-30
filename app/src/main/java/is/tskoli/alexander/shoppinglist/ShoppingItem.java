@@ -16,8 +16,16 @@ public class ShoppingItem {
         this.done   = false;
     }
 
-    public void setAmount(int amount){
-        this.amount = amount;
+    public String getText(){
+        return this.amount + " " + this.item;
+    }
+
+    public void addAmount(){
+        this.amount += 1;
+    }
+
+    public void removeAmount(){
+        this.amount -= 1;
     }
 
     public void setDone(){
