@@ -25,5 +25,37 @@ public class ShoppingHelper {
         items.set(idx, item);
     }
 
+    public static void remove(int idx){
+        items.remove(idx);
+    }
+
+    public static boolean isEmpty(){
+        return items.size() == 0;
+    }
+
+    public static String getStatus(){
+
+        //get the total amount of items in the list
+        int total = items.size();
+
+        int done = getDone();
+
+        return done + " / " + total;
+    }
+
+    //get the total amount of checked items
+    private static int getDone(){
+        int done = 0;
+
+        //check every item if its checked
+        for(ShoppingItem item : items){
+            if(item.done){
+                done +=1;
+            }
+        }
+
+        return done;
+    }
+
 
 }

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import org.w3c.dom.Text;
 public class MainActivity extends AppCompatActivity {
 
     ListView list;
+    TextView itemStatus;
 
 
     @Override
@@ -32,12 +34,20 @@ public class MainActivity extends AppCompatActivity {
         //get the actual list
         list = (ListView) findViewById(R.id.ShoppingList);
 
+        itemStatus = (TextView) findViewById(R.id.itemStatus);
+
+        //if the shopping list is not empty, we a status
+        if(!ShoppingHelper.isEmpty()){
+            itemStatus.setText(ShoppingHelper.getStatus());
+        }
+
+
+
         //create the adapter for the list
         final ArrayAdapter<ShoppingItem> arrayAdapter = new ShoppingAdapter();
 
         //connect the adapter to the list
         list.setAdapter(arrayAdapter);
-
 
         Button addBtn = (Button) findViewById(R.id.addBtn);
 
@@ -47,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
                 EditText item = (EditText) findViewById(R.id.addText);
                 String text = item.getText().toString();
-                Log.wtf("wtf", text);
+
 
                 if(text.length() > 0){
                     ShoppingItem newItem = new ShoppingItem(text, 1);
@@ -96,23 +106,18 @@ public class MainActivity extends AppCompatActivity {
 
             View shoppingView = convertView;
 
-            //Variables in a list item
-            TextView itemName;
-            final ShoppingItem item;
-            Button addBtn;
-            Button removeBtn;
-
             //make sure we have a view
             if (shoppingView == null){
                 shoppingView = getLayoutInflater().inflate(R.layout.shopping_item, parent, false);
             }
 
-            item      = ShoppingHelper.find(position);
-            itemName  = (TextView) shoppingView.findViewById(R.id.itemName);
-            addBtn    = (Button) shoppingView.findViewById(R.id.itemAdd);
-            removeBtn = (Button) shoppingView.findViewById(R.id.itemRemove);
-
-
+            final ShoppingItem item = ShoppingHelper.find(position);
+            TextView itemName       = (TextView) shoppingView.findViewById(R.id.itemName);
+            final TextView itemStatus     = (TextView) findViewById(R.id.itemStatus);
+            Button addBtn           = (Button) shoppingView.findViewById(R.id.itemAdd);
+            Button removeBtn        = (Button) shoppingView.findViewById(R.id.itemRemove);
+            Button deleteBtn        = (Button) shoppingView.findViewById(R.id.itemDelete);
+            CheckBox checkBox       = (CheckBox) shoppingView.findViewById(R.id.itemDone);
 
             itemName.setText(item.getText());
 
@@ -134,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //if the item amount is over 1, so we
                     if(item.amount > 1){
-                        //-1 the item
+                        //-1 the item and uncheck the done
                         item.removeAmount();
                         //update the list object
                         ShoppingHelper.update(position, item);
@@ -145,6 +150,38 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //remove the list object
+                    ShoppingHelper.remove(position);
+                    //update the status text
+                    itemStatus.setText(ShoppingHelper.getStatus());
+                    //update the listview
+                    list.invalidateViews();
+                }
+            });
+
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //get the checkbox object we clicked
+                    CheckBox box = (CheckBox) v;
+
+                    //if the box is checked we set the item to done
+                    if(box.isChecked()){
+                        item.setDone();
+                    }
+                    else{
+                        item.removeDone();
+                    }
+
+                    ShoppingHelper.update(position, item);
+
+                    //update the status text
+                    itemStatus.setText(ShoppingHelper.getStatus());
+                }
+            });
 
 
             return shoppingView;
